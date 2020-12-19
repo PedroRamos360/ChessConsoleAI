@@ -13,9 +13,9 @@ letters_coordinates = ("a", "b", "c", "d", "e", "f", "g", "h")
 game_over = False
 
 colors = ["white", "black"]
-bot_color = choice(colors)
+bot_color = "white"
 colors.remove(bot_color)
-player_color = colors[0]
+player_color = "black"
 
 print("You're playing with the {} pieces".format(player_color))
 
