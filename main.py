@@ -1,4 +1,5 @@
-from pieces_start_location import white_pieces, black_pieces
+from rules import white_possible_moves
+from pieces_location import update_position
 from random import choice
 
 # Tabuleiro baseado em coordenadas numéricas em vez de notação de xadrez
@@ -23,7 +24,9 @@ player_move = None
 if player_color == "white":
     player_move = input("Type your move: ")
 
+
+
 while not game_over:
-    bot_move = "e4"
+    bot_move = choice(white_possible_moves)
     print(bot_move)
     player_move = input("Type your move: ")

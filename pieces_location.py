@@ -1,5 +1,17 @@
 from piece import Piece
 
+letters_coordinates = ("a", "b", "c", "d", "e", "f", "g", "h")
+
+def update_position(move):
+    characters = []
+    for character in move:
+        characters.append(character)
+
+    x = letters_coordinates.index(characters[-2]) + 1
+    y = int(characters[-1])
+    new_position = (x, y)
+    return new_position
+
 white_pieces = [
     # Peças
     Piece((1, 1), "rook", "white"),
