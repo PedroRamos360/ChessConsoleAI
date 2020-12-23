@@ -1,18 +1,6 @@
 from piece import Piece
 
-letters_coordinates = ("a", "b", "c", "d", "e", "f", "g", "h")
-
-def update_position(move):
-    characters = []
-    for character in move:
-        characters.append(character)
-
-    x = letters_coordinates.index(characters[-2]) + 1
-    y = int(characters[-1])
-    new_position = (x, y)
-    return new_position
-
-white_pieces = [
+white_pieces_start = [
     # Peças
     Piece((1, 1), "rook", "white"),
     Piece((2, 1), "knight", "white"),
@@ -33,7 +21,7 @@ white_pieces = [
     Piece((8, 2), "pawn", "white")
 ]
 
-black_pieces = [
+black_pieces_start = [
     # Peças
     Piece((1, 8), "rook", "black"),
     Piece((2, 8), "knight", "black"),
@@ -53,3 +41,34 @@ black_pieces = [
     Piece((7, 7), "pawn", "black"),
     Piece((8, 7), "pawn", "black")
 ]
+
+letters_coordinates = ("a", "b", "c", "d", "e", "f", "g", "h")
+
+def delete_piece_by_location(piece_position, list_of_pieces):
+    for piece in list_of_pieces:
+        if piece.position == piece_position:
+            list_of_pieces.remove(piece)
+
+def move_piece(position_now, new_position, list_of_pieces):
+    for piece in list_of_pieces:
+        if piece.position == position_now:
+            piece.position = new_position
+
+def update_position(move, piece_color, black_pieces, white_pieces):
+    position_now, new_position = move.split("-")
+
+    x = letters_coordinates.index(new_position[-2]) + 1
+    y = int(new_position[-1])
+    new_position = (x, y)
+
+    x = letters_coordinates.index(position_now[-2]) + 1
+    y = int(position_now[-1])
+    position_now = (x, y)
+    
+    if piece_color == "white":
+        delete_piece_by_location(new_position, black_pieces)
+        move_piece(position_now, new_position, white_pieces)
+    elif piece_color == "black":
+        delete_piece_by_location(new_position, white_pieces)
+        move_piece(position_now, new_position, white_pieces)
+

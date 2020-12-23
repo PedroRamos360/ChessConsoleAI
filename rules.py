@@ -1,19 +1,6 @@
-from pieces_location import white_pieces, black_pieces
+from main import white_pieces, black_pieces
 
 letters_coordinates = ("a", "b", "c", "d", "e", "f", "g", "h")
-piece_name_notation = {
-    "pawn": "",
-    "knight": "N",
-    "bishop": "B",
-    "rook": "R",
-    "queen": "Q",
-    "king": "K",
-}
-
-def name_to_notation(piece):
-    for key, value in piece_name_notation.items():
-        if key == piece:
-            return value
 
 def item_in_list(item, list_object):
     if list_object.count(item) > 0:
@@ -33,208 +20,213 @@ for piece in black_pieces:
     black_pieces_locations.append(piece.position)
 
 white_possible_moves = []
-for piece in white_pieces:
-    if piece.name == "pawn":
-        if not piece.has_moved:
-            move = (piece.position[0], piece.position[1] + 1)
-            piece.legal_moves.append(move)
-            if (not item_in_list(move, white_pieces_locations) and
-                not item_in_list(move, black_pieces_locations)):
-                move = (piece.position[0], piece.position[1] + 2)
+black_possible_moves = []
+def get_possible_moves(pieces, possible_moves, my_pieces_locations, opponent_pieces_locations, pawn_orientation):
+    for piece in pieces:
+        if piece.name == "pawn":
+            if not piece.has_moved:
+                move = (piece.position[0], piece.position[1] + 1 * pawn_orientation)
                 piece.legal_moves.append(move)
-        else:
-            move = (piece.position[0], piece.position[1] + 1)
-            piece.legal_moves.append(move)
-        
-        legal_moves = []
-        # Checa se tem alguma peça no caminho
-        for legal_move in piece.legal_moves:
-            if not (item_in_list(legal_move, white_pieces_locations)
-                or item_in_list(legal_move, black_pieces_locations)):
-                legal_moves.append("{}".format(coordinates_to_chess_notation(legal_move)))
-
-        diagonals = [(1, 1), (-1, 1)]
-        for element in diagonals:
-            x, y = piece.position
-            x += element[0]
-            y += element[1]
-            if item_in_list((x, y), black_pieces_locations):
-                legal_moves.append("{}x{}".format(letters_coordinates[piece.position[0]-1], coordinates_to_chess_notation((x, y))))
-        
-        
-        piece.legal_moves = legal_moves
-
-
-    if piece.name == "knight":
-        for i in range(2):
-            change_in_x = 0
-            change_in_y = 0
-            if i == 0:
-                change_in_x = 1
-                change_in_y= 2
-            if i == 1:
-                change_in_x = 2
-                change_in_y= 1
-            move = (piece.position[0] +change_in_x, piece.position[1] +change_in_y)
-            piece.legal_moves.append(move)
-            move = (piece.position[0] +change_in_x, piece.position[1] -change_in_y)
-            piece.legal_moves.append(move)
-            move = (piece.position[0] -change_in_x, piece.position[1] +change_in_y)
-            piece.legal_moves.append(move)
-            move = (piece.position[0] -change_in_x, piece.position[1] -change_in_y)
-            piece.legal_moves.append(move)
-
-        legal_moves = []
-        for legal_move in piece.legal_moves:
+                if (not item_in_list(move, my_pieces_locations) and
+                    not item_in_list(move, opponent_pieces_locations)):
+                    move = (piece.position[0], piece.position[1] + 2 * pawn_orientation)
+                    piece.legal_moves.append(move)
+            else:
+                move = (piece.position[0], piece.position[1] + 1 * pawn_orientation)
+                piece.legal_moves.append(move)
+            
+            legal_moves = []
             # Checa se tem alguma peça no caminho
-            # Checa se a peça não saiu do tabuleiro
-            if (legal_move[0] >= 1 and legal_move[1] >= 1 and 
-                legal_move[0] <= 8 and legal_move[1] <= 8 and
-                not item_in_list(legal_move, white_pieces_locations) and
-                item_in_list(legal_move, black_pieces_locations)):
-                legal_moves.append("Nx{}".format(coordinates_to_chess_notation(legal_move)))
-            elif ((legal_move[0] >= 1 and legal_move[1] >= 1 and 
-                legal_move[0] <= 8 and legal_move[1] <= 8 and
-                not item_in_list(legal_move, white_pieces_locations) and
-                not item_in_list(legal_move, black_pieces_locations))):
-                legal_moves.append("N{}".format(coordinates_to_chess_notation(legal_move)))
-   
-        piece.legal_moves = legal_moves
-    
-    if piece.name == "bishop":
-        diagonals = [(1, 1), (-1, 1), (1, -1), (-1, -1)]
-        for element in diagonals:
-            x, y = piece.position
-            while True:
+            for legal_move in piece.legal_moves:
+                if not (item_in_list(legal_move, my_pieces_locations)
+                    or item_in_list(legal_move, opponent_pieces_locations)):
+                    legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation(legal_move)))
+
+            diagonals = [(1, 1), (-1, 1)]
+            for element in diagonals:
+                x, y = piece.position
                 x += element[0]
                 y += element[1]
-                if (x < 1 or y < 1 or 
-                    x > 8 or y > 8 or
-                    item_in_list((x, y), white_pieces_locations)):
-                    break
-                elif item_in_list((x, y), black_pieces_locations):
-                    piece.legal_moves.append("Bx{}".format(coordinates_to_chess_notation((x, y)))) 
-                    break
-                else:
-                    piece.legal_moves.append("B{}".format(coordinates_to_chess_notation((x, y))))
+                if item_in_list((x, y), opponent_pieces_locations):
+                    legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+            
+            
+            piece.legal_moves = legal_moves
+
+
+        if piece.name == "knight":
+            for i in range(2):
+                change_in_x = 0
+                change_in_y = 0
+                if i == 0:
+                    change_in_x = 1
+                    change_in_y= 2
+                if i == 1:
+                    change_in_x = 2
+                    change_in_y= 1
+                move = (piece.position[0] +change_in_x, piece.position[1] +change_in_y)
+                piece.legal_moves.append(move)
+                move = (piece.position[0] +change_in_x, piece.position[1] -change_in_y)
+                piece.legal_moves.append(move)
+                move = (piece.position[0] -change_in_x, piece.position[1] +change_in_y)
+                piece.legal_moves.append(move)
+                move = (piece.position[0] -change_in_x, piece.position[1] -change_in_y)
+                piece.legal_moves.append(move)
+
+            legal_moves = []
+            for legal_move in piece.legal_moves:
+                # Checa se tem alguma peça no caminho
+                # Checa se a peça não saiu do tabuleiro
+                if (legal_move[0] >= 1 and legal_move[1] >= 1 and 
+                    legal_move[0] <= 8 and legal_move[1] <= 8 and
+                    not item_in_list(legal_move, my_pieces_locations) and
+                    item_in_list(legal_move, opponent_pieces_locations)):
+                    legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation(legal_move)))
+                elif ((legal_move[0] >= 1 and legal_move[1] >= 1 and 
+                    legal_move[0] <= 8 and legal_move[1] <= 8 and
+                    not item_in_list(legal_move, my_pieces_locations) and
+                    not item_in_list(legal_move, opponent_pieces_locations))):
+                    legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation(legal_move)))
     
-    if piece.name == "rook":
-        for element in [1, -1]:
-            x, y = piece.position
-            while True:
-                y += element
-                if (x < 1 or y < 1 or 
-                    x > 8 or y > 8 or
-                    item_in_list((x, y), white_pieces_locations)):
-                    break
-                elif item_in_list((x, y), black_pieces_locations):
-                    piece.legal_moves.append("Rx{}".format(coordinates_to_chess_notation((x, y))))
-                    break
-                else:
-                    piece.legal_moves.append("R{}".format(coordinates_to_chess_notation((x, y))))
-        for element in [1, -1]:
-            x, y = piece.position
-            while True:
-                x += element
-                if (x < 1 or y < 1 or 
-                    x > 8 or y > 8 or
-                    item_in_list((x, y), white_pieces_locations)):
-                    break
-                elif item_in_list((x, y), black_pieces_locations):
-                    piece.legal_moves.append("Rx{}".format(coordinates_to_chess_notation((x, y))))
-                    break
-                else:
-                    piece.legal_moves.append("R{}".format(coordinates_to_chess_notation((x, y))))
-    
-    if piece.name == "queen":
-        diagonals = [(1, 1), (-1, 1), (1, -1), (-1, -1)]
-        for element in diagonals:
-            x, y = piece.position
-            while True:
-                x += element[0]
-                y += element[1]
-                if (x < 1 or y < 1 or 
-                    x > 8 or y > 8 or
-                    item_in_list((x, y), white_pieces_locations)):
-                    break
-                elif item_in_list((x, y), black_pieces_locations):
-                    piece.legal_moves.append("Qx{}".format(coordinates_to_chess_notation((x, y)))) 
-                    break
-                else:
-                    piece.legal_moves.append("Q{}".format(coordinates_to_chess_notation((x, y))))
-        for element in [1, -1]:
-            x, y = piece.position
-            while True:
-                y += element
-                if (x < 1 or y < 1 or 
-                    x > 8 or y > 8 or
-                    item_in_list((x, y), white_pieces_locations)):
-                    break
-                elif item_in_list((x, y), black_pieces_locations):
-                    piece.legal_moves.append("Qx{}".format(coordinates_to_chess_notation((x, y))))
-                    break
-                else:
-                    piece.legal_moves.append("Q{}".format(coordinates_to_chess_notation((x, y))))
-        for element in [1, -1]:
-            x, y = piece.position
-            while True:
-                x += element
-                if (x < 1 or y < 1 or 
-                    x > 8 or y > 8 or
-                    item_in_list((x, y), white_pieces_locations)):
-                    break
-                elif item_in_list((x, y), black_pieces_locations):
-                    piece.legal_moves.append("Qx{}".format(coordinates_to_chess_notation((x, y))))
-                    break
-                else:
-                    piece.legal_moves.append("Q{}".format(coordinates_to_chess_notation((x, y))))
+            piece.legal_moves = legal_moves
         
-    if piece.name == "king":
-        diagonals = [(1, 1), (-1, 1), (1, -1), (-1, -1)]
-        for element in diagonals:
-            for i in range(1):  # para o break quebrar esse loop
+        if piece.name == "bishop":
+            diagonals = [(1, 1), (-1, 1), (1, -1), (-1, -1)]
+            for element in diagonals:
                 x, y = piece.position
-                x += element[0]
-                y += element[1]
-                if (x < 1 or y < 1 or 
-                    x > 8 or y > 8 or
-                    item_in_list((x, y), white_pieces_locations)):
-                    break
-                elif item_in_list((x, y), black_pieces_locations):
-                    piece.legal_moves.append("Kx{}".format(coordinates_to_chess_notation((x, y))))
-                    break
-                else:
-                    piece.legal_moves.append("K{}".format(coordinates_to_chess_notation((x, y))))
-
-        for element in [1, -1]:
-            for i in range(1):
-                x, y = piece.position
-                y += element
-                if (x < 1 or y < 1 or 
-                    x > 8 or y > 8 or
-                    item_in_list((x, y), white_pieces_locations)):
-                    break
-                elif item_in_list((x, y), black_pieces_locations):
-                    piece.legal_moves.append("Kx{}".format(coordinates_to_chess_notation((x, y))))
-                    break
-                else:
-                    piece.legal_moves.append("K{}".format(coordinates_to_chess_notation((x, y))))
-
-        for element in [1, -1]:
-            for i in range(1):
-                x, y = piece.position
-                x += element
-                if (x < 1 or y < 1 or 
-                    x > 8 or y > 8 or
-                    item_in_list((x, y), white_pieces_locations)):
-                    break
-                elif item_in_list((x, y), black_pieces_locations):
-                    piece.legal_moves.append("Kx{}".format(coordinates_to_chess_notation((x, y))))
-                    break
-                else:
-                    piece.legal_moves.append("K{}".format(coordinates_to_chess_notation((x, y))))
-                
-
+                while True:
+                    x += element[0]
+                    y += element[1]
+                    if (x < 1 or y < 1 or 
+                        x > 8 or y > 8 or
+                        item_in_list((x, y), my_pieces_locations)):
+                        break
+                    elif item_in_list((x, y), opponent_pieces_locations):
+                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y)))) 
+                        break
+                    else:
+                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
         
-    for legal_move in piece.legal_moves:
-        white_possible_moves.append(legal_move)
+        if piece.name == "rook":
+            for element in [1, -1]:
+                x, y = piece.position
+                while True:
+                    y += element
+                    if (x < 1 or y < 1 or 
+                        x > 8 or y > 8 or
+                        item_in_list((x, y), my_pieces_locations)):
+                        break
+                    elif item_in_list((x, y), opponent_pieces_locations):
+                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+                        break
+                    else:
+                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+            for element in [1, -1]:
+                x, y = piece.position
+                while True:
+                    x += element
+                    if (x < 1 or y < 1 or 
+                        x > 8 or y > 8 or
+                        item_in_list((x, y), my_pieces_locations)):
+                        break
+                    elif item_in_list((x, y), opponent_pieces_locations):
+                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+                        break
+                    else:
+                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+        
+        if piece.name == "queen":
+            diagonals = [(1, 1), (-1, 1), (1, -1), (-1, -1)]
+            for element in diagonals:
+                x, y = piece.position
+                while True:
+                    x += element[0]
+                    y += element[1]
+                    if (x < 1 or y < 1 or 
+                        x > 8 or y > 8 or
+                        item_in_list((x, y), my_pieces_locations)):
+                        break
+                    elif item_in_list((x, y), opponent_pieces_locations):
+                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y)))) 
+                        break
+                    else:
+                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+            for element in [1, -1]:
+                x, y = piece.position
+                while True:
+                    y += element
+                    if (x < 1 or y < 1 or 
+                        x > 8 or y > 8 or
+                        item_in_list((x, y), my_pieces_locations)):
+                        break
+                    elif item_in_list((x, y), opponent_pieces_locations):
+                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+                        break
+                    else:
+                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+            for element in [1, -1]:
+                x, y = piece.position
+                while True:
+                    x += element
+                    if (x < 1 or y < 1 or 
+                        x > 8 or y > 8 or
+                        item_in_list((x, y), my_pieces_locations)):
+                        break
+                    elif item_in_list((x, y), opponent_pieces_locations):
+                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+                        break
+                    else:
+                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+            
+        if piece.name == "king":
+            diagonals = [(1, 1), (-1, 1), (1, -1), (-1, -1)]
+            for element in diagonals:
+                for i in range(1):  # para o break quebrar esse loop
+                    x, y = piece.position
+                    x += element[0]
+                    y += element[1]
+                    if (x < 1 or y < 1 or 
+                        x > 8 or y > 8 or
+                        item_in_list((x, y), my_pieces_locations)):
+                        break
+                    elif item_in_list((x, y), opponent_pieces_locations):
+                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+                        break
+                    else:
+                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+
+            for element in [1, -1]:
+                for i in range(1):
+                    x, y = piece.position
+                    y += element
+                    if (x < 1 or y < 1 or 
+                        x > 8 or y > 8 or
+                        item_in_list((x, y), my_pieces_locations)):
+                        break
+                    elif item_in_list((x, y), opponent_pieces_locations):
+                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+                        break
+                    else:
+                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+
+            for element in [1, -1]:
+                for i in range(1):
+                    x, y = piece.position
+                    x += element
+                    if (x < 1 or y < 1 or 
+                        x > 8 or y > 8 or
+                        item_in_list((x, y), my_pieces_locations)):
+                        break
+                    elif item_in_list((x, y), opponent_pieces_locations):
+                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+                        break
+                    else:
+                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+                    
+
+            
+        for legal_move in piece.legal_moves:
+            possible_moves.append(legal_move)
+
+get_possible_moves(white_pieces, white_possible_moves, white_pieces_locations, black_pieces_locations, 1)
+get_possible_moves(black_pieces, black_possible_moves, black_pieces_locations, white_pieces_locations, -1)
