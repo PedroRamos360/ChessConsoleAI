@@ -31,6 +31,7 @@ def get_possible_moves(pieces, possible_moves, my_pieces_locations, opponent_pie
                     not item_in_list(move, opponent_pieces_locations)):
                     move = (piece.position[0], piece.position[1] + 2 * pawn_orientation)
                     piece.legal_moves.append(move)
+                piece.has_moved = True
             else:
                 move = (piece.position[0], piece.position[1] + 1 * pawn_orientation)
                 piece.legal_moves.append(move)
@@ -42,7 +43,7 @@ def get_possible_moves(pieces, possible_moves, my_pieces_locations, opponent_pie
                     or item_in_list(legal_move, opponent_pieces_locations)):
                     legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation(legal_move)))
 
-            diagonals = [(1, 1), (-1, 1)]
+            diagonals = [(1, 1 * pawn_orientation), (-1, 1 * pawn_orientation)]
             for element in diagonals:
                 x, y = piece.position
                 x += element[0]
@@ -228,5 +229,3 @@ def get_possible_moves(pieces, possible_moves, my_pieces_locations, opponent_pie
         for legal_move in piece.legal_moves:
             possible_moves.append(legal_move)
 
-get_possible_moves(white_pieces, white_possible_moves, white_pieces_locations, black_pieces_locations, 1)
-get_possible_moves(black_pieces, black_possible_moves, black_pieces_locations, white_pieces_locations, -1)

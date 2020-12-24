@@ -70,5 +70,5 @@ def update_position(move, piece_color, black_pieces, white_pieces):
         move_piece(position_now, new_position, white_pieces)
     elif piece_color == "black":
         delete_piece_by_location(new_position, white_pieces)
-        move_piece(position_now, new_position, white_pieces)
+        move_piece(position_now, new_position, black_pieces)
 

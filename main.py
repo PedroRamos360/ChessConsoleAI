@@ -40,6 +40,7 @@ white_possible_moves = []
 black_possible_moves = []
 def get_possible_moves(pieces, possible_moves, my_pieces_locations, opponent_pieces_locations, pawn_orientation):
     for piece in pieces:
+        piece.legal_moves = []
         if piece.name == "pawn":
             if not piece.has_moved:
                 move = (piece.position[0], piece.position[1] + 1 * pawn_orientation)
@@ -59,7 +60,7 @@ def get_possible_moves(pieces, possible_moves, my_pieces_locations, opponent_pie
                     or item_in_list(legal_move, opponent_pieces_locations)):
                     legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation(legal_move)))
 
-            diagonals = [(1, 1), (-1, 1)]
+            diagonals = [(1, 1 * pawn_orientation), (-1, 1 * pawn_orientation)]
             for element in diagonals:
                 x, y = piece.position
                 x += element[0]
@@ -261,7 +262,7 @@ while not game_over:
     print(bot_move)
     while True:
         player_move = input("Type your move: ")
-        if black_possible_moves.index(player_move) < 0:
+        if not player_move in black_possible_moves:
             print("Impossible move, try again!")
         else:
             update_position(player_move, player_color, black_pieces, white_pieces)
