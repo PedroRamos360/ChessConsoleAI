@@ -1,28 +1,20 @@
-from main import white_pieces, black_pieces
-
-letters_coordinates = ("a", "b", "c", "d", "e", "f", "g", "h")
-
 def item_in_list(item, list_object):
     if list_object.count(item) > 0:
         return True
     else:
         return False
 
+letters_coordinates = ("a", "b", "c", "d", "e", "f", "g", "h")
+
 def coordinates_to_chess_notation(move):
     new_move = "{}{}".format(letters_coordinates[move[0] - 1], move[1])
     return new_move
 
-white_pieces_locations = []
-for piece in white_pieces:
-    white_pieces_locations.append(piece.position)
-black_pieces_locations = []
-for piece in black_pieces:
-    black_pieces_locations.append(piece.position)
 
-white_possible_moves = []
-black_possible_moves = []
-def get_possible_moves(pieces, possible_moves, my_pieces_locations, opponent_pieces_locations, pawn_orientation):
+def get_possible_moves(pieces, my_pieces_locations, opponent_pieces_locations, pawn_orientation):
+    possible_moves = []
     for piece in pieces:
+        piece.legal_moves = []
         if piece.name == "pawn":
             if not piece.has_moved:
                 move = (piece.position[0], piece.position[1] + 1 * pawn_orientation)
@@ -31,7 +23,6 @@ def get_possible_moves(pieces, possible_moves, my_pieces_locations, opponent_pie
                     not item_in_list(move, opponent_pieces_locations)):
                     move = (piece.position[0], piece.position[1] + 2 * pawn_orientation)
                     piece.legal_moves.append(move)
-                piece.has_moved = True
             else:
                 move = (piece.position[0], piece.position[1] + 1 * pawn_orientation)
                 piece.legal_moves.append(move)
@@ -225,7 +216,7 @@ def get_possible_moves(pieces, possible_moves, my_pieces_locations, opponent_pie
                         piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
                     
 
-            
         for legal_move in piece.legal_moves:
             possible_moves.append(legal_move)
-
+    
+    return possible_moves
