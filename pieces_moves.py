@@ -4,15 +4,32 @@ def item_in_list(item, list_object):
     else:
         return False
 
-letters_coordinates = ("a", "b", "c", "d", "e", "f", "g", "h")
 
+letters_coordinates = ("a", "b", "c", "d", "e", "f", "g", "h")
 def coordinates_to_chess_notation(move):
     new_move = "{}{}".format(letters_coordinates[move[0] - 1], move[1])
     return new_move
 
 
+def get_pieces_by_name(name, pieces):
+    pieces_wanted = []
+    for piece in pieces:
+        if piece.name == name:
+            pieces_wanted.append(piece)
+    
+    return pieces_wanted
+
+def get_piece_by_name(name, pieces):
+    for piece in pieces:
+        if piece.name == name:
+            return piece
+
+
 def get_possible_moves(pieces, my_pieces_locations, opponent_pieces_locations, pawn_orientation):
     possible_moves = []
+    # Roque
+    # my_king = get_pieces_by_name("king", pieces)
+    # my_rooks = get_pieces_by_name("rook", pieces)
     for piece in pieces:
         piece.legal_moves = []
         if piece.name == "pawn":

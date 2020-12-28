@@ -4,4 +4,6 @@ class Piece:
         self.color = color
         self.name = name
         self.has_moved = False
+        self.attacked = False
         self.legal_moves = []
+        self.attacking_squares = []
