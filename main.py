@@ -1,5 +1,6 @@
 from pieces_location import update_position, white_pieces_start, black_pieces_start
 from pieces_moves import get_possible_moves
+from attacked_squares import get_attacked_squares
 from random import choice
 
 white_pieces = white_pieces_start
@@ -25,6 +26,7 @@ for piece in black_pieces:
 white_possible_moves = []
 black_possible_moves = []
 
+print(get_attacked_squares(white_pieces, white_pieces_locations, black_pieces_locations, 1))
 if player_color == "white":
     while not game_over:
         white_pieces_locations = []

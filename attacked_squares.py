@@ -22,13 +22,42 @@ def get_attacked_squares(pieces, my_pieces_locations, opponent_pieces_locations,
                 x, y = piece.position
                 x += element[0]
                 y += element[1]
-                attacking_squares.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+                if (x > 0 and x < 9) and (y > 0 and y < 9):
+                    attacking_squares.append("{}".format(coordinates_to_chess_notation((x, y))))
             
             piece.attacking_squares = attacking_squares
 
 
         if piece.name == "knight":
-            pass
+            for i in range(2):
+                change_in_x = 0
+                change_in_y = 0
+                if i == 0:
+                    change_in_x = 1
+                    change_in_y= 2
+                if i == 1:
+                    change_in_x = 2
+                    change_in_y= 1
+                move = (piece.position[0] +change_in_x, piece.position[1] +change_in_y)
+                piece.attacking_squares.append(move)
+                move = (piece.position[0] +change_in_x, piece.position[1] -change_in_y)
+                piece.attacking_squares.append(move)
+                move = (piece.position[0] -change_in_x, piece.position[1] +change_in_y)
+                piece.attacking_squares.append(move)
+                move = (piece.position[0] -change_in_x, piece.position[1] -change_in_y)
+                piece.attacking_squares.append(move)
+
+            attacking_squares = []
+            for attacking_square in piece.attacking_squares:
+                # Checa se tem alguma peça no quadrado
+                # Checa se a peça não saiu do tabuleiro
+                if (attacking_square[0] >= 1 and attacking_square[1] >= 1 and 
+                    attacking_square[0] <= 8 and attacking_square[1] <= 8 and
+                    not item_in_list(attacking_square, my_pieces_locations)):
+                    attacking_squares.append("{}".format(coordinates_to_chess_notation(attacking_square)))
+            
+            piece.attacking_squares = attacking_squares
+
         if piece.name == "bishop":
             pass
         if piece.name == "rook":

@@ -84,17 +84,11 @@ def get_possible_moves(pieces, my_pieces_locations, opponent_pieces_locations, p
 
             legal_moves = []
             for legal_move in piece.legal_moves:
-                # Checa se tem alguma peça no caminho
+                # Checa se tem alguma peça no quadrado
                 # Checa se a peça não saiu do tabuleiro
                 if (legal_move[0] >= 1 and legal_move[1] >= 1 and 
                     legal_move[0] <= 8 and legal_move[1] <= 8 and
-                    not item_in_list(legal_move, my_pieces_locations) and
-                    item_in_list(legal_move, opponent_pieces_locations)):
-                    legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation(legal_move)))
-                elif ((legal_move[0] >= 1 and legal_move[1] >= 1 and 
-                    legal_move[0] <= 8 and legal_move[1] <= 8 and
-                    not item_in_list(legal_move, my_pieces_locations) and
-                    not item_in_list(legal_move, opponent_pieces_locations))):
+                    not item_in_list(legal_move, my_pieces_locations)):
                     legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation(legal_move)))
     
             piece.legal_moves = legal_moves
