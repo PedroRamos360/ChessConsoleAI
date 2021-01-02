@@ -1,3 +1,6 @@
+from attacked_squares import get_attacked_squares
+
+
 def item_in_list(item, list_object):
     if list_object.count(item) > 0:
         return True
@@ -182,6 +185,7 @@ def get_possible_moves(pieces, my_pieces_locations, opponent_pieces_locations, p
                         piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
             
         if piece.name == "king":
+            legal_moves = []
             diagonals = [(1, 1), (-1, 1), (1, -1), (-1, -1)]
             for element in diagonals:
                 for i in range(1):  # para o break quebrar esse loop
@@ -193,10 +197,10 @@ def get_possible_moves(pieces, my_pieces_locations, opponent_pieces_locations, p
                         item_in_list((x, y), my_pieces_locations)):
                         break
                     elif item_in_list((x, y), opponent_pieces_locations):
-                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+                        legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
                         break
                     else:
-                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+                        legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
 
             for element in [1, -1]:
                 for i in range(1):
@@ -207,10 +211,10 @@ def get_possible_moves(pieces, my_pieces_locations, opponent_pieces_locations, p
                         item_in_list((x, y), my_pieces_locations)):
                         break
                     elif item_in_list((x, y), opponent_pieces_locations):
-                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+                        legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
                         break
                     else:
-                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+                        legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
 
             for element in [1, -1]:
                 for i in range(1):
@@ -221,12 +225,22 @@ def get_possible_moves(pieces, my_pieces_locations, opponent_pieces_locations, p
                         item_in_list((x, y), my_pieces_locations)):
                         break
                     elif item_in_list((x, y), opponent_pieces_locations):
-                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
+                        legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
                         break
                     else:
-                        piece.legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
-                    
+                        legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
 
+            attacked_squares = get_attacked_squares(pieces, my_pieces_locations, opponent_pieces_locations, pawn_orientation)
+            attacked_squares_without_piece_name = []
+            for attacked_square in attacked_squares:
+                attacked_squares_without_piece_name.append(attacked_square[-2:])
+            
+            for legal_move in legal_moves:
+                if not item_in_list(legal_move[-2:], attacked_squares_without_piece_name):
+                    piece.legal_moves.append(legal_move)
+
+            print(piece.legal_moves)
+                    
         for legal_move in piece.legal_moves:
             possible_moves.append(legal_move)
     

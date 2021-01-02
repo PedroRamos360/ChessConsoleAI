@@ -11,7 +11,7 @@ white_pieces_start = [
     Piece((7, 1), "knight", "white"),
     Piece((8, 1), "rook", "white"),
     # Peões
-    Piece((1, 2), "pawn", "white"),
+    Piece((1, 6), "pawn", "white"),
     Piece((2, 2), "pawn", "white"),
     Piece((3, 2), "pawn", "white"),
     Piece((4, 2), "pawn", "white"),
@@ -71,4 +71,3 @@ def update_position(move, piece_color, black_pieces, white_pieces):
     elif piece_color == "black":
         delete_piece_by_location(new_position, white_pieces)
         move_piece(position_now, new_position, black_pieces)
-
