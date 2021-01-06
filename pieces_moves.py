@@ -1,4 +1,5 @@
 from attacked_squares import get_attacked_squares
+from pieces_location import update_position
 
 def item_in_list(item, list_object):
     if list_object.count(item) > 0:
@@ -27,11 +28,11 @@ def get_piece_by_name(name, pieces):
             return piece
 
 
-def get_possible_moves(pieces, opponent_pieces, my_pieces_locations, opponent_pieces_locations, pawn_orientation):
+def get_possible_moves(my_pieces, opponent_pieces, my_pieces_locations, opponent_pieces_locations, pawn_orientation):
     possible_moves = []
     # Roque
     # my_rooks = get_pieces_by_name("rook", pieces)
-    for piece in pieces:
+    for piece in my_pieces:
         piece.legal_moves = []
         if piece.name == "pawn":
             if piece.position[1] != 2 and pawn_orientation == 1:
@@ -232,7 +233,7 @@ def get_possible_moves(pieces, opponent_pieces, my_pieces_locations, opponent_pi
                     else:
                         legal_moves.append("{}-{}".format(coordinates_to_chess_notation(piece.position), coordinates_to_chess_notation((x, y))))
 
-            attacked_squares = get_attacked_squares(pieces, my_pieces_locations, opponent_pieces_locations, pawn_orientation)
+            attacked_squares = get_attacked_squares(my_pieces, my_pieces_locations, opponent_pieces_locations, pawn_orientation)
             attacked_squares_without_piece_name = []
             for attacked_square in attacked_squares:
                 attacked_squares_without_piece_name.append(attacked_square[-2:])
@@ -246,16 +247,50 @@ def get_possible_moves(pieces, opponent_pieces, my_pieces_locations, opponent_pi
         attacked_squares_without_piece_name = []
         for attacked_square in attacked_squares:
             attacked_squares_without_piece_name.append(attacked_square[-2:])
-        my_king = get_piece_by_name("king", pieces)
+        my_king = get_piece_by_name("king", my_pieces)
         if item_in_list(coordinates_to_chess_notation(my_king.position), attacked_squares_without_piece_name):
             king_attacked = True
+        else:
+            king_attacked = False
 
-        if king_attacked:
-            for legal_move in piece.legal_moves:
-                pass
-                # verificar se o lance faz com que o rei não fique em xeque
 
         for legal_move in piece.legal_moves:
             possible_moves.append(legal_move)
-    
+
+    if king_attacked:
+        possible_moves_king_attacked = []
+        for legal_move in possible_moves:
+            # Criação de váriaveis para não mudar a posição original
+            my_pieces_after_move = my_pieces
+            opponent_pieces_after_move = opponent_pieces
+            opponent_pieces_locations_after_move = opponent_pieces_locations
+            my_pieces_locations_after_move = my_pieces_locations
+
+            # Usa a cópia das váriaveis acima para atualizar uma posição hipotética que surgiria depois da jogada
+            if pawn_orientation == 1:
+                #primeiro as peças das pretas depois das brancas
+                update_position(legal_move, 'white', opponent_pieces_after_move, my_pieces_after_move)
+            else:
+                update_position(legal_move, 'black', my_pieces_after_move, opponent_pieces_after_move)
+
+            # pega os ataques
+            attacked_squares = get_attacked_squares(opponent_pieces_after_move, 
+                opponent_pieces_locations_after_move, 
+                my_pieces_locations_after_move, 
+                pawn_orientation*-1
+            )
+
+            attacked_squares_without_piece_name = []
+            for attacked_square in attacked_squares:
+                attacked_squares_without_piece_name.append(attacked_square[-2:])
+                my_king = get_piece_by_name("king", my_pieces)
+            if not item_in_list(coordinates_to_chess_notation(my_king.position), attacked_squares_without_piece_name):
+                # Rei não está atacado, portanto o movimento é possível
+                possible_moves_king_attacked.append(legal_move)
+        
+        possible_moves = possible_moves_king_attacked
+
+    '''
+    Consertar bug: Jogo interpreta xeque como xeque-mate
+    '''
     return possible_moves
