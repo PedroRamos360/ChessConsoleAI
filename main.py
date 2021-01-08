@@ -39,7 +39,6 @@ if player_color == "white":
         if white_possible_moves == []:
             print("Black wins by checkmate")
             break
-        print(white_possible_moves)
         while True:
             player_move = input("Type your move: ")
             if not player_move in white_possible_moves:
@@ -52,7 +51,6 @@ if player_color == "white":
         if black_possible_moves == []:
             print("White wins by checkmate")
             break
-        print(black_possible_moves)
         bot_move = choice(black_possible_moves)
         update_position(bot_move, bot_color, black_pieces, white_pieces)
         print(bot_move)
@@ -69,7 +67,6 @@ elif player_color == "black":
         if white_possible_moves == []:
             print("Black wins by checkmate")
             break
-        print(white_possible_moves)
         bot_move = choice(white_possible_moves)
         update_position(bot_move, bot_color, black_pieces, white_pieces)
         print(bot_move)
@@ -77,7 +74,6 @@ elif player_color == "black":
         if black_possible_moves == []:
             print("White wins by checkmate")
             break
-        print(black_possible_moves)
         while True:
             player_move = input("Type your move: ")
             if not player_move in black_possible_moves:
