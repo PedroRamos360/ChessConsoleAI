@@ -10,7 +10,8 @@ black_wins = False
 white_wins = False
 
 colors = ["white", "black"]
-bot_color = choice(colors)
+# bot_color = choice(colors)
+bot_color = "black"
 colors.remove(bot_color)
 player_color = colors[0]
 
@@ -28,7 +29,7 @@ white_possible_moves = []
 black_possible_moves = []
 
 if player_color == "white":
-    while not black_wins or not white_wins:
+    while True:
         white_pieces_locations = []
         for piece in white_pieces:
             white_pieces_locations.append(piece.position)  
@@ -44,15 +45,17 @@ if player_color == "white":
             if not player_move in white_possible_moves:
                 print("Impossible move, try again!")
             else:
-                update_position(player_move, player_color, black_pieces, white_pieces)
+                update_position(player_move, player_color, black_pieces, black_pieces_locations, white_pieces, white_pieces_locations)
                 break
             
         black_possible_moves = get_possible_moves(black_pieces, white_pieces, black_pieces_locations, white_pieces_locations, -1)
+        print(black_possible_moves)
         if black_possible_moves == []:
             print("White wins by checkmate")
             break
         bot_move = choice(black_possible_moves)
-        update_position(bot_move, bot_color, black_pieces, white_pieces)
+        update_position(bot_move, bot_color, black_pieces, black_pieces_locations, white_pieces, white_pieces_locations)
+
         print(bot_move)
 elif player_color == "black":
     while True:
@@ -68,7 +71,7 @@ elif player_color == "black":
             print("Black wins by checkmate")
             break
         bot_move = choice(white_possible_moves)
-        update_position(bot_move, bot_color, black_pieces, white_pieces)
+        update_position(bot_move, bot_color, black_pieces, black_pieces_locations, white_pieces, white_pieces_locations)
         print(bot_move)
         black_possible_moves = get_possible_moves(black_pieces, white_pieces, black_pieces_locations, white_pieces_locations, -1)
         if black_possible_moves == []:
@@ -79,7 +82,7 @@ elif player_color == "black":
             if not player_move in black_possible_moves:
                 print("Impossible move, try again!")
             else:
-                update_position(player_move, player_color, black_pieces, white_pieces)
+                update_position(player_move, player_color, black_pieces, black_pieces_locations, white_pieces, white_pieces_locations)
                 break
 
     

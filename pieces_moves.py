@@ -42,14 +42,18 @@ def get_possible_moves(my_pieces, opponent_pieces, my_pieces_locations, opponent
                 piece.has_moved = True
             if not piece.has_moved:
                 move = (piece.position[0], piece.position[1] + 1 * pawn_orientation)
-                piece.legal_moves.append(move)
                 if (not item_in_list(move, my_pieces_locations) and
                     not item_in_list(move, opponent_pieces_locations)):
-                    move = (piece.position[0], piece.position[1] + 2 * pawn_orientation)
                     piece.legal_moves.append(move)
+                    move = (piece.position[0], piece.position[1] + 2 * pawn_orientation)
+                    if (not item_in_list(move, my_pieces_locations) and
+                        not item_in_list(move, opponent_pieces_locations)):
+                        piece.legal_moves.append(move)
             else:
                 move = (piece.position[0], piece.position[1] + 1 * pawn_orientation)
-                piece.legal_moves.append(move)
+                if (not item_in_list(move, my_pieces_locations) and
+                    not item_in_list(move, opponent_pieces_locations)):
+                    piece.legal_moves.append(move)
             
             legal_moves = []
             # Checa se tem alguma peça no caminho
@@ -270,9 +274,9 @@ def get_possible_moves(my_pieces, opponent_pieces, my_pieces_locations, opponent
             # Usa a cópia das váriaveis acima para atualizar uma posição hipotética que surgiria depois da jogada
             if pawn_orientation == 1:
                 #primeiro as peças das pretas depois das brancas
-                update_position(move, 'white', opponent_pieces_after_move, my_pieces_after_move)
+                update_position(move, 'white', opponent_pieces_after_move, opponent_pieces_locations_after_move, my_pieces_after_move, my_pieces_locations_after_move)
             else:
-                update_position(move, 'black', my_pieces_after_move, opponent_pieces_after_move)
+                update_position(move, 'black', my_pieces_after_move, my_pieces_locations_after_move, opponent_pieces_after_move, opponent_pieces_locations_after_move)
 
             # pega os ataques
             attacked_squares = get_attacked_squares(opponent_pieces_after_move, 
@@ -292,5 +296,39 @@ def get_possible_moves(my_pieces, opponent_pieces, my_pieces_locations, opponent
                 possible_moves_king_attacked.append(move)
         
         possible_moves = possible_moves_king_attacked
+    else:
+        possible_moves_king_not_attacked = possible_moves
+        for move in possible_moves:
+            # Criação de váriaveis para não mudar a posição original
+            my_pieces_after_move = deepcopy(my_pieces)
+            opponent_pieces_after_move = deepcopy(opponent_pieces)
+            opponent_pieces_locations_after_move = deepcopy(opponent_pieces_locations)
+            my_pieces_locations_after_move = deepcopy(my_pieces_locations)
+
+            # Usa a cópia das váriaveis acima para atualizar uma posição hipotética que surgiria depois da jogada
+            if pawn_orientation == 1:
+                #primeiro as peças das pretas depois das brancas
+                update_position(move, 'white', opponent_pieces_after_move, opponent_pieces_locations_after_move, my_pieces_after_move, my_pieces_locations_after_move)
+            else:
+                update_position(move, 'black', my_pieces_after_move, my_pieces_locations_after_move, opponent_pieces_after_move, opponent_pieces_locations_after_move)
+
+            # pega os ataques
+            attacked_squares = get_attacked_squares(opponent_pieces_after_move, 
+                opponent_pieces_locations_after_move, 
+                my_pieces_locations_after_move, 
+                pawn_orientation*-1
+            )
+
+            attacked_squares_without_piece_name = []
+            for attacked_square in attacked_squares:
+                attacked_squares_without_piece_name.append(attacked_square[-2:])
+
+            my_king = get_piece_by_name("king", my_pieces_after_move)
+
+            if item_in_list(coordinates_to_chess_notation(my_king.position), attacked_squares_without_piece_name):
+                # Rei não está atacado, portanto o movimento é possível
+                possible_moves_king_not_attacked.remove(move)
+        
+        possible_moves = possible_moves_king_not_attacked
         
     return possible_moves
